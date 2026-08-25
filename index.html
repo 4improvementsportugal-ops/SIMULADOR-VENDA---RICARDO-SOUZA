@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#191919">
+  <title>Diagnóstico de Venda | Ricardo Souza</title>
+  <meta name="description" content="Descubra em poucos minutos os principais fatores que podem estar a atrasar a venda da sua casa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    const PIXEL_ID = 'AQUI_PIXEL_ID';
+    const PIXEL_ATIVO = /^\d{5,}$/.test(PIXEL_ID);
+    const CHAVE_SESSAO = 'diag_ricardo_souza';
+    const CHAVE_CONSENTIMENTO = CHAVE_SESSAO + '_cookies';
+
+    function carregarPixel(){
+      if(!PIXEL_ATIVO || window.fbq) return;
+      !function(f,b,e,v,n,t,s){
+        if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)
+      }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', PIXEL_ID);
+      fbq('track','PageView');
+    }
+
+    function temConsentimento(){
+      try { return localStorage.getItem(CHAVE_CONSENTIMENTO)==='aceite'; }
+      catch(e){ return false; }
+    }
+
+    if (temConsentimento()) carregarPixel();
+  </script>
+
+  <style>
+    :root{
+      --principal:#ffde59;
+      --destaque:#565656;
+      --fundo:#191919;
+      --texto:#f7f7f4;
+      --texto-escuro:#000000;
+      --muted:#b9b9b3;
+      --card:#222222;
+      --card-2:#272727;
+      --line:#3b3b3b;
+      --erro:#f07f7f;
+      --erro-bg:rgba(240,127,127,.08);
+      --radius:24px;
+      --shadow:0 22px 70px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255,222,89,.08), transparent 25%),
+        radial-gradient(circle at 94% 18%, rgba(255,255,255,.045), transparent 22%),
+        var(--fundo);
+      color:var(--texto);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    button,input,select{font:inherit}
+    a{color:inherit}
+    .wrap{width:min(1180px,calc(100% - 36px));margin:0 auto}
+    .hero{
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      padding:28px 0 42px;
+    }
+    .hero-grid{
+      width:100%;
+      display:grid;
+      grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);
+      gap:64px;
+      align-items:center;
+    }
+    .hero-grid > div:first-child{padding-left:36px}
+    .brand{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:34px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-size:13px;
+    }
+    .brand-dot{
+      width:11px;height:11px;border-radius:50%;background:var(--principal);
+      box-shadow:0 0 0 5px rgba(255,222,89,.12);
+    }
+    .eyebrow{
+      color:var(--principal);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:800;
+      font-size:12px;
+      margin:0 0 16px;
+    }
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0}
+    h1{
+      font-size:clamp(48px,6.3vw,86px);
+      line-height:.98;
+      letter-spacing:-.035em;
+      max-width:760px;
+      text-wrap:balance;
+    }
+    h1 em{
+      display:block;
+      color:var(--principal);
+      font-size:.7em;
+      line-height:1.02;
+      margin-top:10px;
+      font-weight:600;
+    }
+    .hero-copy{
+      max-width:690px;
+      color:#d4d4cf;
+      font-size:clamp(16px,1.6vw,19px);
+      line-height:1.65;
+      margin:24px 0 28px;
+    }
+    .primary{
+      border:0;
+      border-radius:999px;
+      background:var(--principal);
+      color:var(--texto-escuro);
+      min-height:56px;
+      padding:0 24px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 12px 30px rgba(255,222,89,.12);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .primary:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(255,222,89,.18)}
+    .primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .seals{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+    .seal{
+      padding:9px 12px;border:1px solid var(--line);border-radius:999px;
+      color:#cfcfca;font-size:12px;font-weight:600;background:rgba(255,255,255,.02);
+    }
+    .hero-visual{position:relative}
+
+    .wise-logo-wrap{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      margin:0 0 18px;
+      padding-right:4px;
+    }
+    .wise-logo{
+      display:block;
+      width:min(230px,58%);
+      height:auto;
+      object-fit:contain;
+    }
+
+    .hero-photo{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+    }
+    .visual-card{
+      aspect-ratio:4/3;
+      border-radius:32px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.09);
+      background:
+        linear-gradient(135deg, rgba(255,222,89,.09), transparent 45%),
+        linear-gradient(180deg,#2c2c2c 0%,#202020 100%);
+      box-shadow:var(--shadow);
+      position:relative;
+      isolation:isolate;
+    }
+    .visual-caption{
+      position:absolute;left:28px;right:28px;bottom:26px;z-index:2;
+      padding:18px 20px;border-radius:18px;
+      background:rgba(14,14,14,.7);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .visual-caption strong{display:block;font-size:17px;margin-bottom:6px}
+    .visual-caption span{color:#c7c7c2;font-size:13px;line-height:1.45}
+    .mini-card{
+      position:absolute;left:-34px;bottom:34px;z-index:3;
+      width:210px;background:#fff;color:#111;padding:18px;border-radius:18px;
+      box-shadow:0 18px 50px rgba(0,0,0,.25);
+    }
+    .mini-card b{display:block;font-size:13px;margin-bottom:5px}
+    .mini-card span{font-size:12px;color:#555;line-height:1.35}
+
+    .quiz-section{padding:86px 0 110px}
+    .quiz-shell{
+      width:min(860px,100%);margin:0 auto;background:var(--card);
+      border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .quiz-top{padding:24px 28px 18px 42px;border-bottom:1px solid var(--line)}
+    .quiz-meta{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:13px}
+    .quiz-meta strong{font-size:13px}
+    .quiz-meta span{color:var(--muted);font-size:12px}
+    .progress{
+      height:7px;border-radius:999px;background:#343434;overflow:hidden
+    }
+    .progress > i{
+      display:block;height:100%;width:25%;border-radius:999px;background:var(--principal);
+      transition:width .35s ease;
+    }
+    .step{display:none;padding:34px 28px 30px 42px}
+    .step.active{display:block}
+    .step h2{font-size:clamp(31px,5vw,48px);line-height:1.04;letter-spacing:-.025em;margin-bottom:9px}
+    .step-sub{margin:0 0 30px;color:var(--muted);line-height:1.5}
+    .field{margin:0 0 26px}
+    .field > label,.field legend{
+      display:block;margin:0 0 10px;font-size:13px;font-weight:800;color:#efefe9
+    }
+    fieldset{border:0;padding:0;margin:0}
+    .grid-2,.grid-4{display:grid;gap:10px}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .choice{position:relative}
+    .choice input{position:absolute;opacity:0;pointer-events:none}
+    .choice span{
+      display:flex;min-height:52px;align-items:center;justify-content:center;text-align:center;
+      padding:10px 12px;border-radius:15px;border:1px solid #464646;background:#292929;
+      color:#ededeb;font-size:13px;font-weight:700;cursor:pointer;
+      transition:.18s ease;
+    }
+    .choice input:checked + span{
+      background:var(--principal);color:#000;border-color:var(--principal)
+    }
+    .choice input:focus-visible + span{outline:3px solid rgba(255,222,89,.25);outline-offset:2px}
+    input[type="text"],input[type="email"],input[type="tel"],select{
+      width:100%;min-height:54px;border-radius:15px;border:1px solid #464646;
+      background:#292929;color:#fff;padding:0 15px;outline:none;
+    }
+    select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#999 50%),linear-gradient(135deg,#999 50%,transparent 50%);background-position:calc(100% - 18px) 23px,calc(100% - 13px) 23px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+    input:focus,select:focus{border-color:var(--principal);box-shadow:0 0 0 3px rgba(255,222,89,.09)}
+    .docs{display:flex;flex-wrap:wrap;gap:10px}
+    .doc-chip{position:relative}
+    .doc-chip input{position:absolute;opacity:0}
+    .doc-chip span{
+      display:inline-flex;align-items:center;min-height:43px;padding:0 13px;border-radius:999px;
+      border:1px solid #494949;background:#292929;cursor:pointer;font-size:12px;font-weight:700
+    }
+    .doc-chip input:checked + span{background:var(--principal);color:#000;border-color:var(--principal)}
+    .error-box{border-color:var(--erro)!important;background:var(--erro-bg)!important}
+    .error-msg{display:none;color:#ffb2b2;font-size:12px;margin-top:8px}
+    .field.invalid .error-msg{display:block}
+    .hidden{display:none!important}
+    .consent-line{
+      display:flex;gap:11px;align-items:flex-start;padding:14px;border:1px solid #414141;
+      border-radius:15px;background:#292929;color:#d3d3cf;font-size:12px;line-height:1.5
+    }
+    .consent-line input{margin-top:2px;accent-color:var(--principal)}
+    .quiz-actions{display:flex;justify-content:space-between;gap:12px;margin-top:32px}
+    .secondary{
+      min-height:52px;padding:0 20px;border-radius:999px;border:1px solid #4b4b4b;
+      background:transparent;color:#fff;font-weight:700;cursor:pointer
+    }
+
+    .cookie{
+      position:fixed;z-index:30;left:18px;right:18px;bottom:18px;margin:auto;
+      width:min(720px,calc(100% - 36px));background:#f5f3e9;color:#171717;
+      border-radius:20px;box-shadow:0 18px 70px rgba(0,0,0,.4);
+      padding:18px;display:none;align-items:center;justify-content:space-between;gap:18px
+    }
+    .cookie.show{display:flex}
+    .cookie p{margin:0;font-size:12px;line-height:1.5}
+    .cookie-actions{display:flex;gap:8px;flex:0 0 auto}
+    .cookie button{min-height:42px;border-radius:999px;padding:0 15px;font-weight:800;cursor:pointer}
+    .cookie .accept{border:0;background:#111;color:#fff}
+    .cookie .reject{border:1px solid #bbb;background:transparent;color:#111}
+    .footer{padding:0 0 36px;text-align:center;color:#777;font-size:11px}
+
+    @media(max-width:899px){
+      .hero{min-height:auto;padding:20px 0 44px}
+      .hero-grid{grid-template-columns:1fr;gap:24px}
+      .hero-grid > div:first-child{padding-left:22px;padding-right:0}
+      .hero-visual{order:-1}
+      .wise-logo-wrap{margin:0 0 12px;padding-right:0}
+      .wise-logo{width:min(190px,52%)}
+      .brand{margin-bottom:23px}
+      .visual-card{aspect-ratio:16/10;max-height:34svh;border-radius:22px}
+      .mini-card{left:10px;right:10px;bottom:10px;width:auto;background:rgba(255,255,255,.92);backdrop-filter:blur(12px)}
+      .visual-caption{display:none}
+      h1{font-size:clamp(27px,7.4vw,52px);line-height:1.1;letter-spacing:-.026em}
+      .hero-copy{font-size:14px;line-height:1.55;margin:16px 0 18px}
+      .primary{min-height:52px;width:100%}
+      .seals{margin-top:13px}
+      .seal{font-size:10px;padding:7px 9px}
+      .quiz-section{padding:48px 0 80px}
+      .quiz-shell{border-radius:23px}
+      .quiz-top,.step{padding-left:30px;padding-right:18px}
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .cookie{align-items:stretch;flex-direction:column}
+      .cookie-actions{width:100%}.cookie button{flex:1}
+    }
+    @media(max-height:700px) and (max-width:899px){
+      .visual-card{max-height:26svh}
+      .hero{padding-top:12px}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="brand"><span class="brand-dot" aria-hidden="true"></span> Ricardo Souza</div>
+          <p class="eyebrow">Diagnóstico de venda</p>
+          <h1>A sua casa está preparada para ser vendida?<em>Ou há algo a fazê-la perder tempo no mercado?</em></h1>
+          <p class="hero-copy">Duas casas semelhantes podem ter percursos de venda muito diferentes. Um documento em falta, um acordo por resolver ou o momento errado pode prolongar o processo. Descubra onde está a sua.</p>
+          <button class="primary" type="button" onclick="document.getElementById('diagnostico').scrollIntoView({behavior:'smooth'})">Começar o diagnóstico →</button>
+          <div class="seals" aria-label="Vantagens">
+            <span class="seal">2 minutos</span>
+            <span class="seal">Sem compromisso</span>
+            <span class="seal">Resultado imediato</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Composição visual imobiliária">
+          <div class="wise-logo-wrap">
+            <img class="wise-logo" src="wise-real-estate-logo.png" alt="WISE Real Estate — Be Smart · Be Wise">
+          </div>
+          <div class="visual-card">
+            <img class="hero-photo" src="hero-ricardo-souza.png" alt="Interior moderno e sofisticado">
+            <div class="visual-caption">
+              <strong>Uma venda bem preparada começa antes do anúncio.</strong>
+              <span>Documentação, titularidade e timing podem fazer a diferença entre avançar e ficar meses à espera.</span>
+            </div>
+          </div>
+          <div class="mini-card">
+            <b>Diagnóstico personalizado</b>
+            <span>Receba uma leitura prática dos pontos que podem estar a atrasar a venda.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-section" id="diagnostico">
+      <div class="wrap">
+        <form class="quiz-shell" id="quiz" novalidate>
+          <div class="quiz-top">
+            <div class="quiz-meta">
+              <strong id="stepLabel">Passo 1 de 4</strong>
+              <span>Ricardo Souza · Diagnóstico de Venda</span>
+            </div>
+            <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
+              <i id="progressBar"></i>
+            </div>
+          </div>
+
+          <section class="step active" data-step="1">
+            <h2>Comecemos pelo imóvel</h2>
+            <p class="step-sub">Primeiro, algumas informações essenciais sobre o que pretende vender.</p>
+
+            <fieldset class="field" data-required="tipo">
+              <legend id="tipo-label">Tipo de imóvel</legend>
+              <div class="grid-2" role="group" aria-labelledby="tipo-label">
+                <label class="choice"><input type="radio" name="tipo" value="Apartamento"><span>Apartamento</span></label>
+                <label class="choice"><input type="radio" name="tipo" value="Moradia"><span>Moradia</span></label>
+                <label class="choice"><input type="radio" name="tipo" value="Terreno"><span>Terreno</span></label>
+                <label class="choice"><input type="radio" name="tipo" value="Outro"><span>Outro</span></label>
+              </div>
+              <div class="error-msg">Selecione uma opção.</div>
+            </fieldset>
+
+            <fieldset class="field" id="tipologiaField" data-required="tipologia">
+              <legend id="tipologia-label">Tipologia</legend>
+              <div class="grid-4" role="group" aria-labelledby="tipologia-label">
+                <label class="choice"><input type="radio" name="tipologia" value="T0/T1"><span>T0/T1</span></label>
+                <label class="choice"><input type="radio" name="tipologia" value="T2"><span>T2</span></label>
+                <label class="choice"><input type="radio" name="tipologia" value="T3"><span>T3</span></label>
+                <label class="choice"><input type="radio" name="tipologia" value="T4+"><span>T4+</span></label>
+              </div>
+              <div class="error-msg">Selecione a tipologia.</div>
+            </fieldset>
+
+            <div class="field" data-required="localizacao">
+              <label for="localizacao">Localização <span style="color:#888;font-weight:500">(concelho e freguesia)</span></label>
+              <input id="localizacao" name="localizacao" type="text" autocomplete="address-level2" placeholder="Ex.: Cascais, Carcavelos">
+              <div class="error-msg">Indique a localização do imóvel.</div>
+            </div>
+          </section>
+
+          <section class="step" data-step="2">
+            <h2>O que já tem em mãos</h2>
+            <p class="step-sub">A documentação e o acordo entre proprietários podem condicionar o processo desde o início.</p>
+
+            <div class="field" data-required="acordo">
+              <label for="acordo">Estão todos os proprietários de acordo em vender?</label>
+              <select id="acordo" name="acordo">
+                <option value="">Selecione uma opção</option>
+                <option>Sou o único proprietário</option>
+                <option>Sim, está tudo acordado</option>
+                <option>Ainda não há acordo entre todos</option>
+                <option>Não sei / ainda não falámos</option>
+              </select>
+              <div class="error-msg">Selecione uma opção.</div>
+            </div>
+
+            <fieldset class="field" data-required="docs">
+              <legend id="docs-label">Que documentos já tem?</legend>
+              <div class="docs" role="group" aria-labelledby="docs-label">
+                <label class="doc-chip"><input type="checkbox" name="docs" value="Caderneta predial"><span>Caderneta predial</span></label>
+                <label class="doc-chip"><input type="checkbox" name="docs" value="Certidão permanente do registo"><span>Certidão permanente do registo</span></label>
+                <label class="doc-chip"><input type="checkbox" name="docs" value="Licença de utilização"><span>Licença de utilização</span></label>
+                <label class="doc-chip"><input type="checkbox" name="docs" value="Certificado energético"><span>Certificado energético</span></label>
+                <label class="doc-chip"><input id="nenhumDocs" type="checkbox" name="docs" value="Nenhum destes / não sei"><span>Nenhum destes / não sei</span></label>
+              </div>
+              <div class="error-msg">Selecione pelo menos uma opção.</div>
+            </fieldset>
+          </section>
+
+          <section class="step" data-step="3">
+            <h2>O seu contexto</h2>
+            <p class="step-sub">O motivo, o prazo e a situação atual ajudam a perceber a prontidão para avançar.</p>
+
+            <div class="field" data-required="motivo">
+              <label for="motivo">Qual é o principal motivo da venda?</label>
+              <select id="motivo" name="motivo">
+                <option value="">Selecione uma opção</option>
+                <option>Vou mudar de casa</option>
+                <option>Recebi uma herança</option>
+                <option>Quero rentabilizar o investimento</option>
+                <option>Mudança de vida (trabalho, separação, família)</option>
+                <option>Vou emigrar</option>
+                <option>Outro</option>
+              </select>
+              <div class="error-msg">Selecione uma opção.</div>
+            </div>
+
+            <div class="field" data-required="prazo">
+              <label for="prazo">Em que prazo pretende vender?</label>
+              <select id="prazo" name="prazo">
+                <option value="">Selecione uma opção</option>
+                <option>O mais rápido possível</option>
+                <option>Até 3 meses</option>
+                <option>3 a 6 meses</option>
+                <option>Mais de 6 meses</option>
+                <option>Estou só a explorar a ideia</option>
+              </select>
+              <div class="error-msg">Selecione uma opção.</div>
+            </div>
+
+            <div class="field" data-required="mercado">
+              <label for="mercado">O imóvel já está à venda?</label>
+              <select id="mercado" name="mercado">
+                <option value="">Selecione uma opção</option>
+                <option>Não, ainda não</option>
+                <option>Sim, com agência em exclusivo</option>
+                <option>Sim, com agência sem exclusivo</option>
+                <option>Sim, por minha conta</option>
+              </select>
+              <div class="error-msg">Selecione uma opção.</div>
+            </div>
+          </section>
+
+          <section class="step" data-step="4">
+            <h2>Receba o seu diagnóstico</h2>
+            <p class="step-sub">Preencha os seus dados para ver imediatamente o resultado personalizado.</p>
+
+            <div class="field" data-required="nome">
+              <label for="nome">Nome completo</label>
+              <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Nome e apelido">
+              <div class="error-msg">Indique o nome completo.</div>
+            </div>
+
+            <div class="field" data-required="tel">
+              <label for="tel">Telemóvel</label>
+              <input id="tel" name="tel" type="tel" autocomplete="tel" inputmode="tel" placeholder="+351 9XX XXX XXX">
+              <div class="error-msg">Indique um telemóvel válido com pelo menos 9 dígitos.</div>
+            </div>
+
+            <div class="field" data-required="email">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="nome@email.pt">
+              <div class="error-msg">Indique um e-mail válido.</div>
+            </div>
+
+            <div class="field" data-required="avaliacao">
+              <label for="avaliacao">Quer marcar uma avaliação gratuita?</label>
+              <select id="avaliacao" name="avaliacao">
+                <option value="">Selecione uma opção</option>
+                <option>Sim, quero marcar</option>
+                <option>Talvez — primeiro quero saber mais</option>
+                <option>Não, só queria o diagnóstico</option>
+              </select>
+              <div class="error-msg">Selecione uma opção.</div>
+            </div>
+
+            <div class="field" data-required="rgpd">
+              <label class="consent-line">
+                <input id="rgpd" type="checkbox" name="rgpd" value="Sim">
+                <span>Autorizo a Ricardo Souza a contactar-me sobre o meu diagnóstico.</span>
+              </label>
+              <div class="error-msg">É necessário autorizar o contacto para receber o diagnóstico.</div>
+            </div>
+          </section>
+
+          <div class="quiz-actions" style="padding:0 18px 30px 42px">
+            <button class="secondary" id="backBtn" type="button" style="visibility:hidden">Voltar</button>
+            <button class="primary" id="nextBtn" type="button" style="width:auto">Continuar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite" aria-label="Consentimento de cookies">
+    <p><strong>Cookies de medição.</strong><br>Com a sua autorização, podemos usar o Meta Pixel para medir o desempenho deste diagnóstico. Recusar não impede a utilização do simulador.</p>
+    <div class="cookie-actions">
+      <button class="reject" type="button" id="cookieReject">Recusar</button>
+      <button class="accept" type="button" id="cookieAccept">Aceitar</button>
+    </div>
+  </div>
+
+  <div class="footer">© Ricardo Souza · Diagnóstico de Venda</div>
+
+  <script>
+    const WEBHOOK_URL = ''; // adicionar depois
+    const NOME_ORIGEM = 'Ricardo Souza — Diagnóstico de Venda';
+    const MARCA = 'Ricardo Souza';
+    const PREFIXO_PAIS = '351'; // coerente com os contactos +351 fornecidos
+    const POLITICA_PRIVACIDADE = ''; // adicionar depois
+
+    const quiz = document.getElementById('quiz');
+    const steps = [...document.querySelectorAll('.step')];
+    const progress = document.querySelector('.progress');
+    const progressBar = document.getElementById('progressBar');
+    const stepLabel = document.getElementById('stepLabel');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const tipoInputs = [...document.querySelectorAll('input[name="tipo"]')];
+    const tipologiaField = document.getElementById('tipologiaField');
+    const docs = [...document.querySelectorAll('input[name="docs"]')];
+    const nenhumDocs = document.getElementById('nenhumDocs');
+    const cookieBanner = document.getElementById('cookieBanner');
+    let current = 0;
+    let aEnviar = false;
+
+    const A = {};
+
+    function cookieEscolhido(){
+      try { return !!localStorage.getItem(CHAVE_CONSENTIMENTO); }
+      catch(e){ return false; }
+    }
+    if(!cookieEscolhido()) cookieBanner.classList.add('show');
+
+    document.getElementById('cookieAccept').addEventListener('click',()=>{
+      try{ localStorage.setItem(CHAVE_CONSENTIMENTO,'aceite'); }catch(e){}
+      cookieBanner.classList.remove('show');
+      carregarPixel();
+    });
+    document.getElementById('cookieReject').addEventListener('click',()=>{
+      try{ localStorage.setItem(CHAVE_CONSENTIMENTO,'recusado'); }catch(e){}
+      cookieBanner.classList.remove('show');
+    });
+
+    tipoInputs.forEach(input=>{
+      input.addEventListener('change',()=>{
+        if(input.value==='Terreno' && input.checked){
+          tipologiaField.classList.add('hidden');
+          document.querySelectorAll('input[name="tipologia"]').forEach(x=>x.checked=false);
+        }else if(input.checked){
+          tipologiaField.classList.remove('hidden');
+        }
+      });
+    });
+
+    docs.forEach(input=>{
+      input.addEventListener('change',()=>{
+        if(input===nenhumDocs && input.checked){
+          docs.forEach(x=>{ if(x!==nenhumDocs) x.checked=false; });
+        }else if(input!==nenhumDocs && input.checked){
+          nenhumDocs.checked=false;
+        }
+      });
+    });
+
+    function updateUI(){
+      steps.forEach((s,i)=>s.classList.toggle('active',i===current));
+      stepLabel.textContent = `Passo ${current+1} de 4`;
+      progress.setAttribute('aria-valuenow',String(current+1));
+      progressBar.style.width = `${(current+1)*25}%`;
+      backBtn.style.visibility = current===0 ? 'hidden' : 'visible';
+      nextBtn.textContent = current===3 ? 'Ver o meu diagnóstico' : 'Continuar';
+      steps[current].scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    function mark(field, ok){
+      field.classList.toggle('invalid',!ok);
+      const ctrl = field.querySelector('input[type="text"],input[type="email"],input[type="tel"],select,.consent-line,.grid-2,.grid-4,.docs');
+      if(ctrl) ctrl.classList.toggle('error-box',!ok);
+      return ok;
+    }
+
+    function validateStep(i){
+      let ok = true;
+      const s = steps[i];
+
+      if(i===0){
+        const tipo = quiz.querySelector('input[name="tipo"]:checked');
+        ok = mark(s.querySelector('[data-required="tipo"]'),!!tipo) && ok;
+        if(tipo && tipo.value!=='Terreno'){
+          const tip = quiz.querySelector('input[name="tipologia"]:checked');
+          ok = mark(s.querySelector('[data-required="tipologia"]'),!!tip) && ok;
+        }
+        const loc = document.getElementById('localizacao').value.trim();
+        ok = mark(s.querySelector('[data-required="localizacao"]'),loc.length>=2) && ok;
+      }
+
+      if(i===1){
+        ok = mark(s.querySelector('[data-required="acordo"]'),!!document.getElementById('acordo').value) && ok;
+        ok = mark(s.querySelector('[data-required="docs"]'),docs.some(x=>x.checked)) && ok;
+      }
+
+      if(i===2){
+        ['motivo','prazo','mercado'].forEach(k=>{
+          ok = mark(s.querySelector(`[data-required="${k}"]`),!!document.getElementById(k).value) && ok;
+        });
+      }
+
+      if(i===3){
+        const nome = document.getElementById('nome').value.trim();
+        const tel = document.getElementById('tel').value.replace(/\D/g,'');
+        const email = document.getElementById('email').value.trim();
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+        ok = mark(s.querySelector('[data-required="nome"]'),nome.length>=3 && nome.includes(' ')) && ok;
+        ok = mark(s.querySelector('[data-required="tel"]'),tel.length>=9) && ok;
+        ok = mark(s.querySelector('[data-required="email"]'),emailOk) && ok;
+        ok = mark(s.querySelector('[data-required="avaliacao"]'),!!document.getElementById('avaliacao').value) && ok;
+        ok = mark(s.querySelector('[data-required="rgpd"]'),document.getElementById('rgpd').checked) && ok;
+      }
+
+      if(!ok){
+        const first = s.querySelector('.invalid');
+        if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      return ok;
+    }
+
+    function recolher(){
+      A.tipo = quiz.querySelector('input[name="tipo"]:checked')?.value || '';
+      A.tipologia = A.tipo==='Terreno' ? '' : (quiz.querySelector('input[name="tipologia"]:checked')?.value || '');
+      A.localizacao = document.getElementById('localizacao').value.trim();
+      A.acordo = document.getElementById('acordo').value;
+      A.docs = docs.filter(x=>x.checked).map(x=>x.value);
+      A.motivo = document.getElementById('motivo').value;
+      A.prazo = document.getElementById('prazo').value;
+      A.mercado = document.getElementById('mercado').value;
+      A.nome = document.getElementById('nome').value.trim();
+      A.tel = document.getElementById('tel').value.trim();
+      A.email = document.getElementById('email').value.trim();
+      A.avaliacao = document.getElementById('avaliacao').value;
+      A.rgpd = document.getElementById('rgpd').checked;
+    }
+
+    function diagnosticar(){
+      const todosDocs = ['Caderneta predial','Certidão permanente do registo','Licença de utilização','Certificado energético'];
+      const nenhum = A.docs.includes('Nenhum destes / não sei');
+      const emFalta = nenhum ? [...todosDocs] : todosDocs.filter(d=>!A.docs.includes(d));
+
+      let doc = 100;
+      if(emFalta.includes('Caderneta predial')) doc -= 10;
+      if(emFalta.includes('Certidão permanente do registo')) doc -= 10;
+      if(emFalta.includes('Licença de utilização')) doc -= 15;
+      if(emFalta.includes('Certificado energético')) doc -= 25;
+      doc = Math.max(0,Math.min(100,doc));
+
+      let acordo = 100;
+      if(A.acordo==='Sim, está tudo acordado') acordo -= 5;
+      if(A.acordo==='Ainda não há acordo entre todos') acordo -= 45;
+      if(A.acordo==='Não sei / ainda não falámos') acordo -= 25;
+      if(A.motivo==='Recebi uma herança') acordo -= 10;
+      acordo = Math.max(0,Math.min(100,acordo));
+
+      let prontidao = 70;
+      if(A.prazo==='O mais rápido possível') prontidao += 15;
+      if(A.prazo==='Até 3 meses') prontidao += 10;
+      if(A.prazo==='3 a 6 meses') prontidao += 5;
+      if(A.prazo==='Estou só a explorar a ideia') prontidao -= 15;
+      if(A.mercado==='Não, ainda não') prontidao += 5;
+      if(A.mercado==='Sim, com agência sem exclusivo') prontidao -= 5;
+      if(A.mercado==='Sim, com agência em exclusivo') prontidao -= 30;
+      if(A.avaliacao==='Sim, quero marcar') prontidao += 5;
+      prontidao = Math.max(0,Math.min(100,prontidao));
+
+      const global = Math.round(doc*.45 + acordo*.35 + prontidao*.20);
+
+      let tempo='', nota='';
+      if(global>=80){tempo='4 a 8 semanas';nota='A sua casa está pronta a ir a mercado.'}
+      else if(global>=65){tempo='6 a 10 semanas';nota='Está quase — faltam ajustes pontuais.'}
+      else if(global>=50){tempo='2 a 4 meses';nota='Há pontos a resolver antes de anunciar.'}
+      else if(global>=35){tempo='4 a 6 meses';nota='Vários travões vão atrasar a venda.'}
+      else{tempo='Mais de 6 meses';nota='Sem intervenção, a venda vai arrastar-se.'}
+
+      const travoes = [];
+      if(emFalta.includes('Certificado energético')) travoes.push({
+        gravidade:100,titulo:'Falta o certificado energético',
+        texto:'É obrigatório por lei para anunciar o imóvel e deve ser tratado antes de avançar.'
+      });
+      if(A.acordo==='Ainda não há acordo entre todos') travoes.push({
+        gravidade:95,titulo:'Não há acordo entre proprietários',
+        texto:'A escritura exige a intervenção de todos os proprietários, por isso o acordo deve ser resolvido antes de avançar.'
+      });
+      if(A.acordo==='Não sei / ainda não falámos') travoes.push({
+        gravidade:80,titulo:'O acordo entre proprietários não está confirmado',
+        texto:'Fale com os coproprietários antes de anunciar. Descobrir um bloqueio a meio do processo pode comprometer o negócio.'
+      });
+      if(A.mercado==='Sim, com agência em exclusivo') travoes.push({
+        gravidade:90,titulo:'Existe um contrato de exclusividade ativo',
+        texto:'Enquanto a exclusividade estiver em vigor, a mudança de mediação fica condicionada aos termos do contrato.'
+      });
+      if(A.motivo==='Recebi uma herança') travoes.push({
+        gravidade:85,titulo:'O imóvel resulta de uma herança',
+        texto:'Partilhas e habilitação de herdeiros devem estar regularizadas antes da escritura.'
+      });
+      if(emFalta.length>=3) travoes.push({
+        gravidade:75,titulo:'Faltam vários documentos',
+        texto:'Reunir a documentação pode levar tempo. Quanto mais cedo começar, menor o risco de atrasar a venda.'
+      });
+
+      travoes.sort((a,b)=>b.gravidade-a.gravidade);
+
+      return {
+        doc,acordo,prontidao,global,tempo,nota,
+        emFalta,
+        travoes:travoes.slice(0,3)
+      };
+    }
+
+    function normalizarTel(v){
+      let d=(v||'').replace(/\D/g,'');
+      if(!d) return '';
+      if(d.indexOf('00')===0) d=d.slice(2);
+      if(d.length===9 && /^\d+$/.test(PREFIXO_PAIS)) d=PREFIXO_PAIS+d;
+      return '+'+d;
+    }
+
+    function enviarWebhook(tel,first,last,D,eventId){
+      const docsTem = A.docs.includes('Nenhum destes / não sei') ? [] : A.docs;
+      const payload = {
+        name:A.nome,
+        first_name:first,
+        last_name:last,
+        phone:tel,
+        email:A.email,
+        timestamp:new Date().toISOString(),
+        origem:NOME_ORIGEM,
+        pagina_url:window.location.href,
+        event_id:eventId,
+        consentimento_rgpd:A.rgpd?'Sim':'Não',
+        imovel_tipo:A.tipo,
+        imovel_tipologia:A.tipologia,
+        imovel_localizacao:A.localizacao,
+        acordo_venda:A.acordo,
+        documentos_que_tem:docsTem.join(' | ') || 'Nenhum destes / não sei',
+        documentos_em_falta:D.emFalta.join(' | ') || 'Nenhum',
+        motivo_venda:A.motivo,
+        prazo_venda:A.prazo,
+        ja_no_mercado:A.mercado,
+        quer_avaliacao:A.avaliacao,
+        score_documentacao:D.doc,
+        score_acordo:D.acordo,
+        score_prontidao:D.prontidao,
+        score_global:D.global,
+        tempo_estimado:D.tempo,
+        travoes:D.travoes.map(t=>t.titulo).join(' | '),
+        raw:{...A}
+      };
+
+      if(!WEBHOOK_URL || WEBHOOK_URL.includes('AQUI')){
+        console.log('Modo demo — payload do webhook:',payload);
+        return;
+      }
+      fetch(WEBHOOK_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        keepalive:true,
+        body:JSON.stringify(payload)
+      }).catch(err=>console.error('Falha no webhook:',err));
+    }
+
+    function finalizar(){
+      if(aEnviar) return;
+      aEnviar=true;
+      nextBtn.disabled=true;
+      nextBtn.textContent='A preparar o seu diagnóstico…';
+
+      recolher();
+      const D=diagnosticar();
+      const tel=normalizarTel(A.tel);
+      const partes=(A.nome||'').trim().split(/\s+/);
+      const first=partes[0]||'', last=partes.slice(1).join(' ')||'';
+      const eventId='lead-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+
+      try{
+        sessionStorage.setItem(CHAVE_SESSAO,JSON.stringify({A,D,eventId,ts:Date.now()}));
+        sessionStorage.removeItem(CHAVE_SESSAO+'_pv');
+      }catch(e){}
+
+      if(PIXEL_ATIVO && typeof fbq==='function'){
+        fbq('init',PIXEL_ID,{em:A.email,ph:tel,fn:first,ln:last});
+        fbq('track','Lead',{
+          content_name:NOME_ORIGEM,
+          content_category:MARCA
+        },{eventID:eventId});
+      }
+
+      enviarWebhook(tel,first,last,D,eventId);
+
+      let jaFoi=false;
+      const ir=()=>{if(jaFoi)return;jaFoi=true;window.location.href='resultado.html';};
+      setTimeout(ir,800);
+      setTimeout(ir,2500);
+    }
+
+    backBtn.addEventListener('click',()=>{
+      if(current>0){current--;updateUI()}
+    });
+    nextBtn.addEventListener('click',()=>{
+      if(!validateStep(current)) return;
+      recolher();
+      if(current<3){current++;updateUI();}
+      else finalizar();
+    });
+  </script>
+</body>
+</html>
